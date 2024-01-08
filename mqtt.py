@@ -37,14 +37,14 @@ class MqttSender(object):
         self.uuid = hash(uuid.getnode())
     
     def set(self, **kwargs):
-        self.__dict__.update(kwargs)
+        self.__dict__.update(**kwargs)
         
     def connect(self):
         self.client.connect(self.broker, self.port)
         print("Connect to MQTT Server {}:{}".format(self.broker, self.port))
 
-    def __call__(self, **kwargs):
-        msg = "{}|{}".format(self.uuid, self.get(kwargs))
+    def __call__(self, *args, **kwargs):
+        msg = "{}|{}".format(self.uuid, self.get(*args, **kwargs))
         result = self.client.publish(self.topic, msg)
         if result[0] == 0:
             print("Send {} to topic {}".format(msg, self.topic))
