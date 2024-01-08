@@ -23,7 +23,8 @@ class MqttReceiver(object):
         client.subscribe(self.topic)
 
     def on_message(self, client, userdata, msg):
-        print("{} : {}".format(msg.topic, msg.payload))
+        sensor, event = msg.payload.decode().split("|")
+        print("{} : {}".format(sensor, event))
 
 class MqttSender(object):
     def __init__(self, getter):
@@ -42,17 +43,14 @@ class MqttSender(object):
         self.client.connect(self.broker, self.port)
         print("Connect to MQTT Server {}:{}".format(self.broker, self.port))
 
-    def __call__(self):
-        msg = "{}|{}".format(self.uuid, self.get())
+    def __call__(self, **kwargs):
+        msg = "{}|{}".format(self.uuid, self.get(kwargs))
         result = self.client.publish(self.topic, msg)
         if result[0] == 0:
             print("Send {} to topic {}".format(msg, self.topic))
         else:
             print("Failed to send {}, error code {}".format(msg, result[0]))
-
-
     
-
 
 
 if __name__ == "__main__":
@@ -61,6 +59,7 @@ if __name__ == "__main__":
     keepallive = 60
     topic = "/thermal/event_message"
     
+    """
     @MqttSender
     def getter():
         return "fall"
@@ -70,10 +69,9 @@ if __name__ == "__main__":
     while True:
         getter()
         time.sleep(1)
-
-
-    # getter = MqttReceiver(broker, port, topic, keepallive)
-    # getter.listen()
+    """
+    getter = MqttReceiver(broker, port, topic, keepallive)
+    getter.listen()
 
 """
 def on_connect(client, userdata, flags, rc):
