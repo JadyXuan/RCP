@@ -11,7 +11,7 @@ class GPIOSender(object):
 
     def set(self, **kwargs):
         self.__dict__.update(**kwargs)
-        GPIO.setup(self.pin_number, GPIO.HIGH)
+        GPIO.setup(self.pin_number, GPIO.OUT)
 
     def __call__(self, *args, **kwargs):
         result = self.get(*args, **kwargs)
