@@ -40,15 +40,9 @@ class GPIOSender(object):
         GPIO.cleanup()
 
 class GPIOReciever(object):
-    def __init__(self, pin_number=None, mode=None):
+    def __init__(self, pin_number=None, mode="in"):
         GPIO.setmode(GPIO.BCM)
-        if isinstance(mode, str):
-            self.mode = mode
-        elif isinstance(mode, list):
-            self.mode = mode.copy()
-        elif mode is None:
-            self.mode = "in"  # in表示读取的是一个输入引脚的值，out表示读取输出引脚的值,默认为in
-        
+        self.mode_list = []
         if isinstance(pin_number, list):
             self.pin_number_list = pin_number.copy()
         elif isinstance(pin_number, (int, float)):
@@ -56,15 +50,21 @@ class GPIOReciever(object):
         else:
             raise TypeError("Pin Number must be a number or list of numbers.")
         
-        if isinstance(self.mode, str) and self.mode == "in":
-            for pin in self.pin_number_list:
+        if isinstance(mode, str):
+            for i in range(self.pin_number_list):
+                self.mode_list.append[mode]
+        elif isinstance(mode, list):
+            self.mode_list = mode.copy()
+        else:
+            raise TypeError("Mode must be a str or list of strs.")
+
+        for i, pin in enumerate(self.pin_number_list):
+            if self.mode_list[i] == "in":
                 GPIO.setup(pin, GPIO.IN)
                 print("Set GPIO{} as input pin".format(pin))
-        elif isinstance(self.mode, list):
-            for i, pin in enumerate(self.pin_number_list):
-                if self.mode[i] == "in":
-                    GPIO.setup(pin, GPIO.IN)
-                    print("Set GPIO{} as input pin".format(pin))
+            elif self.mode_list[i] == "out":
+                GPIO.setup(pin, GPIO.OUT)
+                print("Set GPIO{} as input pin".format(pin))
         
         atexit.register(self.cleanup)
     
