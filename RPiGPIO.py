@@ -5,20 +5,36 @@ import atexit
 class GPIOSender(object):
     def __init__(self, getter):
         GPIO.setmode(GPIO.BCM)
-        self.pin_number = 1
+        self.pin_number = None
         self.get = getter
         atexit.register(self.cleanup)
 
     def set(self, **kwargs):
-        self.__dict__.update(**kwargs)
-        GPIO.setup(self.pin_number, GPIO.OUT)
+        self.__dict__.update(**kwargs)\
+        
+        if self.pin_number is None:
+            raise TypeError("Pin Number should not be None.")
+        elif isinstance(self.pin_number, (int, float)):
+            self.pin_number = [self.pin_number]
+        elif isinstance(self.pin_number, list):
+            self.pin_number = self.pin_number.copy()
+        else:
+            raise TypeError("Pin Number must be a number or list of numbers.")
+        
+        for pin in self.pin_number:
+            GPIO.setup(pin, GPIO.OUT)
+            print("Set GPIO{} as output pin.".format(self.pin_number))
 
     def __call__(self, *args, **kwargs):
         result = self.get(*args, **kwargs)
-        if result == True:
-            GPIO.output(self.pin_number, GPIO.HIGH)
-        elif result == False:
-            GPIO.output(self.pin_number, GPIO.LOW)
+        if isinstance(result, bool):
+            result_list = [result]
+        elif isinstance(result, list):
+            result_list = result.copy()
+        else:
+            raise TypeError("Sender message must be a bool or list of bools.")
+        for i, pin in enumerate(self.pin_number):
+            GPIO.output(pin, GPIO.HIGH) if result_list[i] else GPIO.output(pin, GPIO.LOW)
 
     def cleanup(self):
         GPIO.cleanup()
@@ -35,6 +51,7 @@ class GPIOReciever(object):
         
         for pin in self.pin_number_list:
             GPIO.setup(pin, GPIO.IN)
+            print("".format(pin))
         
         atexit.register(self.cleanup)
     
