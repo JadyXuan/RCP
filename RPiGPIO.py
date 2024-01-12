@@ -51,7 +51,7 @@ class GPIOReciever(object):
             raise TypeError("Pin Number must be a number or list of numbers.")
         
         if isinstance(mode, str):
-            for i in range(self.pin_number_list):
+            for i in range(len(self.pin_number_list)):
                 self.mode_list.append[mode]
         elif isinstance(mode, list):
             self.mode_list = mode.copy()
