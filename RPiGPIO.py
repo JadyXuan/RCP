@@ -23,6 +23,32 @@ class GPIOSender(object):
     def cleanup(self):
         GPIO.cleanup()
 
+class GPIOReciever(object):
+    def __init__(self, pin_number=None):
+        GPIO.setmode(GPIO.BCM)
+        if isinstance(pin_number, list):
+            self.pin_number_list = pin_number.copy()
+        elif isinstance(pin_number, (int, float)):
+            self.pin_number_list = [pin_number]
+        else:
+            raise TypeError("Pin Number must be a number or list of numbers.")
+        
+        for pin in self.pin_number_list:
+            GPIO.setup(pin, GPIO.IN)
+        
+        atexit.register(self.cleanup)
+    
+    def read(self):
+        result_list = []
+        for pin in self.pin_number_list:
+            result_list.append(GPIO.input(pin))
+        return result_list
+    
+    def cleanup(self):
+        GPIO.cleanup()
+
+
+
 
 if __name__ == "__main__":
     @GPIOSender
