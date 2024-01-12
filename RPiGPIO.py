@@ -52,7 +52,7 @@ class GPIOReciever(object):
         
         if isinstance(mode, str):
             for i in range(len(self.pin_number_list)):
-                self.mode_list.append[mode]
+                self.mode_list.append(mode)
         elif isinstance(mode, list):
             self.mode_list = mode.copy()
         else:
